@@ -1,29 +1,23 @@
-import pandas as pd
-import jobname # для сохранения модели: pip install joblib
-import joblib
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_absolute_error, r2_score
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# 1. Загрузка
-df = pd.read_csv('data/car_prices.csv')
+# ... (после обучения модели и расчета preds) ...
 
-# 2. Признаки и Цель
-X = df.drop('price', axis=1)
-y = df['price']
+# 6. Визуализация результатов (График предсказаний)
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x=y_test, y=preds)
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], '--r', linewidth=2)
+plt.xlabel('Actual Price')
+plt.ylabel('Predicted Price')
+plt.title('Actual vs Predicted Prices')
+plt.show()
 
-# 3. Сплит данных 80/20
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# 7. Интерактивное предсказание
+print("\n--- Try it yourself! ---")
+year = int(input("Enter year (e.g. 2020): "))
+mileage = int(input("Enter mileage (e.g. 50000): "))
+engine = float(input("Enter engine size (e.g. 2.5): "))
 
-# 4. Обучение
-model = LinearRegression()
-model.fit(X_train, y_train)
-
-# 5. Оценка
-preds = model.predict(X_test)
-print(f"R2 Score: {r2_score(y_test, preds):.2f}")
-print(f"Mean Error: ${mean_absolute_error(y_test, preds):.2f}")
-
-# 6. Сохранение
-joblib.dump(model, 'src/car_model.pkl')
-print("--- Model saved to src/car_model.pkl ---")
+new_car = pd.DataFrame([[year, mileage, engine]], columns=['year', 'mileage', 'engine_size'])
+result = model.predict(new_car)
+print(f"Predicted price for your car: ${result[0]:.2f}")
